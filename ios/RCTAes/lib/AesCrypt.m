@@ -63,8 +63,9 @@
     return [self toHex:hashKeyData];
 }
 
-+ (NSData *) AESCBC: (NSString *)operation data: (NSData *)data key: (NSString *)key iv: (NSString *)iv algorithm: (NSString *)algorithm {
++ (NSData *) AESCBC: (NSString *)operation data: (NSString *)hexData key: (NSString *)key iv: (NSString *)iv algorithm: (NSString *)algorithm {
     //convert hex string to hex data
+    NSData *inData = [self fromHex:hexData];
     NSData *keyData = [self fromHex:key];
     NSData *ivData = [self fromHex:iv];
     //    NSData *keyData = [key dataUsingEncoding:NSUTF8StringEncoding];
@@ -85,7 +86,7 @@
             break;
     }
 
-    NSMutableData * buffer = [[NSMutableData alloc] initWithLength:[data length] + kCCBlockSizeAES128];
+    NSMutableData * buffer = [[NSMutableData alloc] initWithLength:[inData length] + kCCBlockSizeAES128];
 
     CCCryptorStatus cryptStatus = CCCrypt(
                                           [operation isEqualToString:@"encrypt"] ? kCCEncrypt : kCCDecrypt,
@@ -93,7 +94,7 @@
                                           kCCOptionPKCS7Padding,
                                           keyData.bytes, keyLength,
                                           ivData.length ? ivData.bytes : nil,
-                                          data.bytes, data.length,
+                                          inData.bytes, inData.length,
                                           buffer.mutableBytes,  buffer.length,
                                           &numBytes);
 
@@ -105,9 +106,10 @@
     return nil;
 }
 
-+ (NSString *) encrypt: (NSString *)clearText key: (NSString *)key iv: (NSString *)iv algorithm: (NSString *)algorithm {
-    NSData *result = [self AESCBC:@"encrypt" data:[clearText dataUsingEncoding:NSUTF8StringEncoding] key:key iv:iv algorithm:algorithm];
-    return [result base64EncodedStringWithOptions:0];
++ (NSString *) encrypt: (NSString *)hexString key: (NSString *)key iv: (NSString *)iv algorithm: (NSString *)algorithm {
+    
+    NSData *result = [self AESCBC:@"encrypt" data:hexString key:key iv:iv algorithm:algorithm];
+    return [self toHex: result];
 }
 
 + (NSString *) decrypt: (NSString *)cipherText key: (NSString *)key iv: (NSString *)iv algorithm: (NSString *)algorithm {
