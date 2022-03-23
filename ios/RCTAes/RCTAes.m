@@ -18,11 +18,11 @@ RCT_EXPORT_METHOD(encrypt:(NSString *)data key:(NSString *)key iv:(NSString *)iv
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
     NSError *error = nil;
-    NSString *base64 = [AesCrypt encrypt:data key:key iv:iv algorithm:algorithm];
-    if (base64 == nil) {
+    NSString *hexString = [AesCrypt encrypt:data key:key iv:iv algorithm:algorithm];
+    if (hexString == nil) {
         reject(@"encrypt_fail", @"Encrypt error", error);
     } else {
-        resolve(base64);
+        resolve(hexString);
     }
 }
 
