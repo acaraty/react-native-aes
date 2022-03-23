@@ -40,7 +40,7 @@ import com.facebook.react.bridge.Callback;
 
 public class RCTAes extends ReactContextBaseJavaModule {
 
-    private static final String CIPHER_ALGORITHM = "AES/CBC/PKCS7Padding";
+    private static final String CIPHER_ALGORITHM = "AES/CBC/NoPadding";
     public static final String HMAC_SHA_256 = "HmacSHA256";
     public static final String HMAC_SHA_512 = "HmacSHA512";
     private static final String KEY_ALGORITHM = "AES";
@@ -197,8 +197,8 @@ public class RCTAes extends ReactContextBaseJavaModule {
 
     final static IvParameterSpec emptyIvSpec = new IvParameterSpec(new byte[] {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00});
 
-    private static String encrypt(String text, String hexKey, String hexIv) throws Exception {
-        if (text == null || text.length() == 0) {
+    private static String encrypt(String hexText, String hexKey, String hexIv) throws Exception {
+        if (hexText == null || hexText.length() == 0) {
             return null;
         }
 
@@ -207,8 +207,10 @@ public class RCTAes extends ReactContextBaseJavaModule {
 
         Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, hexIv == null ? emptyIvSpec : new IvParameterSpec(Hex.decode(hexIv)));
-        byte[] encrypted = cipher.doFinal(text.getBytes("UTF-8"));
-        return Base64.encodeToString(encrypted, Base64.NO_WRAP);
+        byte[] input = Hex.decode(hexText);
+        byte[] encrypted = cipher.doFinal(input);
+
+        return Hex.toHexString(encrypted);
     }
 
     private static String decrypt(String ciphertext, String hexKey, String hexIv) throws Exception {
