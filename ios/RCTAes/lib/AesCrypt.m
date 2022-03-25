@@ -91,7 +91,7 @@
     CCCryptorStatus cryptStatus = CCCrypt(
                                           [operation isEqualToString:@"encrypt"] ? kCCEncrypt : kCCDecrypt,
                                           kCCAlgorithmAES,
-                                          kCCOptionPKCS7Padding,
+                                          0,
                                           keyData.bytes, keyLength,
                                           ivData.length ? ivData.bytes : nil,
                                           inData.bytes, inData.length,
