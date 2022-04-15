@@ -86,7 +86,7 @@
             break;
     }
 
-    NSMutableData * buffer = [[NSMutableData alloc] initWithLength:[inData length] + kCCBlockSizeAES128];
+    NSMutableData * buffer = [[NSMutableData alloc] initWithLength:[inData length]];
 
     CCCryptorStatus cryptStatus = CCCrypt(
                                           [operation isEqualToString:@"encrypt"] ? kCCEncrypt : kCCDecrypt,
